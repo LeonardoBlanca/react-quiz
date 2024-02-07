@@ -5,13 +5,16 @@ import { useReducer } from "react";
 import Loader from "./Loader";
 import Error from "./Error";
 import StartScreen from "./components/StartScreen";
+import Question from "./components/Question";
 
+// Lembrando que aqui é um objeto com várias propriedades
 const initialState = {
   questions: [],
 
   // Status que a nossa aplicação pode ter:
   // 'loading', 'error', 'ready', 'active', 'finished'
   status: "loading",
+  index: 0,
 };
 
 // Temos que passar também o status para essa função/switch case
@@ -21,6 +24,8 @@ function reducer(state, action) {
       return { ...state, questions: action.payload, status: "ready" };
     case "dataFailed":
       return { ...state, status: "error" };
+    case 'start':
+      return {...state, status: "active"};
     default:
       throw new Error("Action unknown");
   }
@@ -28,7 +33,7 @@ function reducer(state, action) {
 
 export default function App() {
   // Destructuring facilitará a renderização condicional no Main
-  const [{ questions, status }, dispatch] = useReducer(reducer, initialState);
+  const [{ questions, status, index }, dispatch] = useReducer(reducer, initialState);
 
   // Vamos passar a quantidade de perguntas na forma de variável em vez do array inteiro.
   const numQuestions = questions.length;
@@ -54,7 +59,8 @@ export default function App() {
       <Main>
         {status === "Loading" && <Loader />}
         {status === "error" && <Error />}
-        {status === "ready" && <StartScreen numQuestions={numQuestions} />}
+        {status === "ready" && <StartScreen numQuestions={numQuestions} dispatch={dispatch} />}
+        {status === "active" && <Question question={questions[index]}/>}
       </Main>
     </div>
   );
