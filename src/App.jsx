@@ -11,27 +11,26 @@ const initialState = {
 
   // Status que a nossa aplicação pode ter:
   // 'loading', 'error', 'ready', 'active', 'finished'
-  status: 'loading',
+  status: "loading",
 };
 
 // Temos que passar também o status para essa função/switch case
-function reducer(state, action){
-  switch(action.type){
-    case 'dataReceived':
-      return {...state, questions: action.payload, status: "ready",};
-    case 'dataFailed':
-      return {...state, status: 'error'};
+function reducer(state, action) {
+  switch (action.type) {
+    case "dataReceived":
+      return { ...state, questions: action.payload, status: "ready" };
+    case "dataFailed":
+      return { ...state, status: "error" };
     default:
-      throw new Error('Action unknown')
-
+      throw new Error("Action unknown");
   }
-
 }
 
 export default function App() {
+  // Destructuring facilitará a renderização condicional no Main
+  const [{ questions, status }, dispatch] = useReducer(reducer, initialState);
 
-  const [{questions, status}, dispatch] = useReducer(reducer, initialState);
-
+  // Vamos passar a quantidade de perguntas na forma de variável em vez do array inteiro.
   const numQuestions = questions.length;
 
   useEffect(() => {
@@ -41,9 +40,9 @@ export default function App() {
         const data = await response.json();
         console.log(data);
         // Precisamos despachar esses dados para a action/switch case.
-        dispatch({ type: 'dataReceived', payload: data})
+        dispatch({ type: "dataReceived", payload: data });
       } catch (error) {
-        dispatch({ type: 'dataFailed'})
+        dispatch({ type: "dataFailed" });
       }
     }
     fetchData();
@@ -53,9 +52,9 @@ export default function App() {
     <div className="app">
       <Header />
       <Main>
-       {status === "Loading" && <Loader />}
-       {status === "error" && <Error />}
-       {status === "ready" && <StartScreen numQuestions={numQuestions}/>}
+        {status === "Loading" && <Loader />}
+        {status === "error" && <Error />}
+        {status === "ready" && <StartScreen numQuestions={numQuestions} />}
       </Main>
     </div>
   );
