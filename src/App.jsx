@@ -8,6 +8,7 @@ import StartScreen from "./components/StartScreen";
 import Question from "./components/Question";
 
 // Lembrando que aqui é um objeto com várias propriedades
+// Cada vez que eu precisar de um state, eu o adiciono aqui.
 const initialState = {
   questions: [],
 
@@ -15,6 +16,8 @@ const initialState = {
   // 'loading', 'error', 'ready', 'active', 'finished'
   status: "loading",
   index: 0,
+  answer: null,
+  points: 0,
 };
 
 // Temos que passar também o status para essa função/switch case
@@ -24,8 +27,18 @@ function reducer(state, action) {
       return { ...state, questions: action.payload, status: "ready" };
     case "dataFailed":
       return { ...state, status: "error" };
-    case 'start':
-      return {...state, status: "active"};
+    case "start":
+      return { ...state, status: "active" };
+    case "newAnswer":
+      const question = state.questions.at(state.index);
+      return {
+        ...state,
+        answer: action.payload,
+        points:
+          action.payload === question.correctOption
+            ? state.points + question.points
+            : state.points,
+      };
     default:
       throw new Error("Action unknown");
   }
@@ -33,7 +46,10 @@ function reducer(state, action) {
 
 export default function App() {
   // Destructuring facilitará a renderização condicional no Main
-  const [{ questions, status, index }, dispatch] = useReducer(reducer, initialState);
+  const [{ questions, status, index, answer }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
 
   // Vamos passar a quantidade de perguntas na forma de variável em vez do array inteiro.
   const numQuestions = questions.length;
@@ -59,8 +75,16 @@ export default function App() {
       <Main>
         {status === "Loading" && <Loader />}
         {status === "error" && <Error />}
-        {status === "ready" && <StartScreen numQuestions={numQuestions} dispatch={dispatch} />}
-        {status === "active" && <Question question={questions[index]}/>}
+        {status === "ready" && (
+          <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
+        )}
+        {status === "active" && (
+          <Question
+            question={questions[index]}
+            dispatch={dispatch}
+            answer={answer}
+          />
+        )}
       </Main>
     </div>
   );
