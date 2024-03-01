@@ -7,6 +7,7 @@ import Error from "./Error";
 import StartScreen from "./components/StartScreen";
 import Question from "./components/Question";
 import NextButton from "./components/NextButton";
+import Progress from "./components/Progress";
 
 // Lembrando que aqui é um objeto com várias propriedades
 // Cada vez que eu precisar de um state, eu o adiciono aqui.
@@ -50,13 +51,16 @@ function reducer(state, action) {
 
 export default function App() {
   // Destructuring facilitará a renderização condicional no Main
-  const [{ questions, status, index, answer }, dispatch] = useReducer(
+  const [{ questions, status, index, answer, points }, dispatch] = useReducer(
     reducer,
     initialState
   );
 
   // Vamos passar a quantidade de perguntas na forma de variável em vez do array inteiro.
   const numQuestions = questions.length;
+  const maxPointsTotal = questions.reduce((prev, cur) => prev + cur.points,
+    0)
+
 
   useEffect(() => {
     async function fetchData() {
@@ -84,12 +88,19 @@ export default function App() {
         )}
         {status === "active" && (
           <>
+            <Progress
+              index={index}
+              numQuestions={numQuestions}
+              points={points}
+              maxPointsTotal={maxPointsTotal}
+              answer={answer}
+            />
             <Question
               question={questions[index]}
               dispatch={dispatch}
               answer={answer}
             />
-            <NextButton dispatch={dispatch} answer={answer}/>
+            <NextButton dispatch={dispatch} answer={answer} />
           </>
         )}
       </Main>
