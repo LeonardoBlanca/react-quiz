@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import Options from "./Options";
 
 export default function Question({ question, dispatch, answer }) {
