@@ -53,6 +53,8 @@ function reducer(state, action) {
     }
     case "nextQuestion":
       return { ...state, index: state.index + 1, answer: null };
+    case "restart":
+      return {...initialState, questions: state.questions, status: "ready"};
     default:
       throw new Error("Action unknown");
   }
@@ -120,6 +122,7 @@ export default function App() {
             points={points}
             maxPointsTotal={maxPointsTotal}
             highscore={highscore}
+            dispatch={dispatch}
           />
         )}
       </Main>
