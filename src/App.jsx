@@ -8,6 +8,7 @@ import StartScreen from "./components/StartScreen";
 import Question from "./components/Question";
 import NextButton from "./components/NextButton";
 import Progress from "./components/Progress";
+import FinishScreen from "./components/FinishScreen";
 
 // Lembrando que aqui é um objeto com várias propriedades
 // Cada vez que eu precisar de um state, eu o adiciono aqui.
@@ -20,6 +21,7 @@ const initialState = {
   index: 0,
   answer: null,
   points: 0,
+  highscore: 0,
 };
 
 // Temos que passar também o status para essa função/switch case
@@ -31,6 +33,13 @@ function reducer(state, action) {
       return { ...state, status: "error" };
     case "start":
       return { ...state, status: "active" };
+    case "finish":
+      return {
+        ...state,
+        status: "finish",
+        highscore:
+          state.points > state.highscore ? state.points : state.highscore,
+      };
     case "newAnswer": {
       const question = state.questions.at(state.index);
       return {
@@ -51,16 +60,14 @@ function reducer(state, action) {
 
 export default function App() {
   // Destructuring facilitará a renderização condicional no Main
-  const [{ questions, status, index, answer, points }, dispatch] = useReducer(
+  const [{ questions, status, index, answer, points, highscore }, dispatch] = useReducer(
     reducer,
     initialState
   );
 
   // Vamos passar a quantidade de perguntas na forma de variável em vez do array inteiro.
   const numQuestions = questions.length;
-  const maxPointsTotal = questions.reduce((prev, cur) => prev + cur.points,
-    0)
-
+  const maxPointsTotal = questions.reduce((prev, cur) => prev + cur.points, 0);
 
   useEffect(() => {
     async function fetchData() {
@@ -100,8 +107,20 @@ export default function App() {
               dispatch={dispatch}
               answer={answer}
             />
-            <NextButton dispatch={dispatch} answer={answer} />
+            <NextButton
+              dispatch={dispatch}
+              answer={answer}
+              index={index}
+              numQuestions={numQuestions}
+            />
           </>
+        )}
+        {status === "finish" && (
+          <FinishScreen
+            points={points}
+            maxPointsTotal={maxPointsTotal}
+            highscore={highscore}
+          />
         )}
       </Main>
     </div>
