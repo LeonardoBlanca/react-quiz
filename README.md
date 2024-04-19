@@ -2,8 +2,6 @@
 
 A fun and interactive quiz application built with React. Test your knowledge with 15 challenging questions!
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
 
